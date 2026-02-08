@@ -18,8 +18,13 @@ stages {
     stage('documentation') {
             steps {
                 bat './mvnw javadoc:javadoc'
-                archiveArtifacts artifacts: 'target/site/apidocs/**'
 
+                bat '''
+                mkdir -p target/site/apidocs
+                cp -r target/site/apidocs/* docs/
+                zip -r target/site/apidocs.zip docs
+                '''
+                archiveArtifacts artifacts: 'docs.zip'
             }
         }
 
