@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     bat './mvnw javadoc:javadoc'
-                    bat 'if exist doc rmdir /S /Q doc'
+                    bat 'if exist doc del /Q doc'
                     bat 'mkdir doc'
                     bat 'xcopy /E /I /Y target\\site doc'
                     bat 'powershell -Command "Compress-Archive -Path doc\\* -DestinationPath doc.zip"'
