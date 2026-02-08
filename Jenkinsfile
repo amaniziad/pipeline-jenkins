@@ -1,5 +1,6 @@
 pipeline {
 agent any
+// test
 stages {
     stage('Test') {
         steps {
@@ -16,7 +17,7 @@ stages {
     stage('documentation') {
             steps {
                 bat './mvnw javadoc:javadoc'
-                archiveArtifacts artifacts: 'target/site/apidocs/**'
+                archiveArtifacts artifacts: 'target/site'
             }
         }
 
