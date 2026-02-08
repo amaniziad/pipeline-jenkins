@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.util.Date;
 
+
+// add comment to explain the class
 @Data
 @Entity(name = "cash_closure")
 public class CashClosure {
