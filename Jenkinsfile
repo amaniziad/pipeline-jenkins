@@ -1,45 +1,79 @@
 pipeline {
-    agent any
-    stages {
-        stage('Test') {
+agent any
+stages {
+    stage('Checkout') {
             steps {
-                junit 'target/surefire-reports/*.xml'
+                checkout scm
             }
         }
+    stage('Init') {
+        steps {
+            bat './mvnw clean'
+        }
+    }
 
-        stage('Build') {
-            steps {
-                bat './mvnw clean install'
-                archiveArtifacts artifacts: 'target/*.jar'
+    stage('Test') {
+        steps {
+            bat './mvnw test'
+            junit '**/target/surefire-reports/*.xml'
+        }
+    }
+    stage('Build') {
+        steps {
+            bat './mvnw install'
+            archiveArtifacts artifacts: 'target/*.jar'
+        }
+    }
+    stage('Documentation') {
+        steps {
+            script {
+                bat './mvnw javadoc:javadoc'
+
+                // Clean up previous 'doc' folder if it exists
+                bat 'if exist doc rmdir /S /Q doc'
+                bat 'mkdir doc'
+
+                // Copy Javadoc content to the 'doc' folder
+                bat 'xcopy /E /I /Y target\\site doc'
+
+                // Delete existing doc.zip if it exists
+                bat 'if exist doc.zip del /Q doc.zip'
+
+                // Create the ZIP file with the new content
+                bat 'powershell -Command "Compress-Archive -Path doc\\* -DestinationPath doc.zip -Force"'
+
+                // Archive the doc.zip file for Jenkins artifacts
+                archiveArtifacts artifacts: 'doc.zip', fingerprint: true
             }
         }
+    }
 
-        stage('Documentation') {
-            steps {
-                script {
-                    bat './mvnw javadoc:javadoc'
-                    bat 'if exist doc del /Q doc'
-                    bat 'mkdir doc'
-                    bat 'xcopy /E /I /Y target\\site doc'
-                    bat 'powershell -Command "Compress-Archive -Path doc\\* -DestinationPath doc.zip"'
-                    archiveArtifacts artifacts: 'doc.zip', fingerprint: true
-                }
-            }
+
+    stage('Deploy') {
+        steps {
+            echo 'Deploying...'
         }
+    }
 
-        stage('Html Publisher') {
-            steps {
-                script {
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportFiles: 'index.html',
-                        reportName: 'Documentation Report',
-                        reportTitles: 'Documentation Report'
-                    ])
-                }
-            }
+
+}
+    post {
+        always {
+            publishHTML ([
+            allowMissing: false,
+             alwaysLinkToLastBuild: true,
+             keepAll: true,
+             reportDir: 'target/site/apidocs',
+             reportFiles: 'index.html',
+             reportName: 'Documentation'
+             ])
+
+        }
+        success {
+            echo '✅ Pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed!'
         }
     }
 }
