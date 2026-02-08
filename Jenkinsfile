@@ -15,18 +15,22 @@ stages {
         }
     }
 
-    stage('documentation') {
-            steps {
-                bat './mvnw javadoc:javadoc'
+  stage('Documentation') {
+      steps {
+          script {
+              bat './mvnw javadoc:javadoc'
 
-                bat '''
-                mkdir -p target/site/apidocs
-                cp -r target/site/apidocs/* docs/
-                zip -r target/site/apidocs.zip docs
-                '''
-                archiveArtifacts artifacts: 'docs.zip'
-            }
-        }
+              bat 'if exist doc rmdir /S /Q doc'
+              bat 'mkdir doc'
+
+              bat 'xcopy /E /I /Y target\\site doc'
+
+              bat 'powershell -Command "Compress-Archive -Path doc\\* -DestinationPath doc.zip"'
+
+              archiveArtifacts artifacts: 'doc.zip', fingerprint: true
+          }
+      }
+  }
 
 }
 }
