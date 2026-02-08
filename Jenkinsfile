@@ -66,6 +66,13 @@ pipeline {
         }
         success {
             // Success-related actions can go here if needed
+            emailext (
+                            subject: "Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                            body: """<p>Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'</p>
+                                     <p>Check console output at <a href="${env.BUILD_URL}console">this link</a> for details.</p>""",
+                            recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                            to: 'ha.deboub.cntsid@gmail.com'
+                        )
         }
         failure {
             // Failure-related actions can go here if needed
