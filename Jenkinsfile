@@ -49,14 +49,15 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                  mail (
-                                subject: "Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                                body: """<p>Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'</p>
-                                         <p>Check console output at <a href="${env.BUILD_URL}console">this link</a> for details.</p>""",
-                               // recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                                to: 'ha.deboub.cntsid@gmail.com'
-                            )
+              bat 'docker-compose up -build'
+//                echo 'Deploying...'
+//                  mail (
+//                                subject: "Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+//                                body: """<p>Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'</p>
+//                                         <p>Check console output at <a href="${env.BUILD_URL}console">this link</a> for details.</p>""",
+//                               // recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+//                                to: 'ha.deboub.cntsid@gmail.com'
+//                            )
             }
         }
     }
