@@ -49,7 +49,7 @@ pipeline {
 //comments
         stage('Deploy') {
             steps {
-              bat 'docker-compose up -build'
+              bat 'docker-compose up --build'
 //                echo 'Deploying...'
 //                  mail (
 //                                subject: "Build ${currentBuild.currentResult}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
