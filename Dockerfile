@@ -2,6 +2,24 @@
 FROM eclipse-temurin:21-jdk-alpine
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Step 2: Set the working directory inside the container
 WORKDIR /app
 
